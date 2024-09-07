@@ -32,27 +32,28 @@ After setting up, simply run the provided script. It will handle repository crea
 
 ## Cloning the Repository
 
-1. **Clone the Repository:**
-
-   Open PowerShell and execute the following command to clone the repository to your local machine:
-   ```bash
-   git clone https://github.com/Ashish-suman-sharma/deployer.git
-2. **Change to the directory where the repository was cloned:**
+Open PowerShell and execute the following command to clone the repository to your local machine:
+   1. **Change to the directory where the repository was cloned:**
    ```bash
    cd C:/deployer
    ```
-2. **Initialize the Project:**
+   2. **Clone the Repository:**
+
+   ```bash
+   git clone https://github.com/Ashish-suman-sharma/deployer.git
+   ```
+3. **Initialize the Project:**
 
    Run npm init to set up the project:
-   ```bash
-   npm install
-   ```
-2. **Open the Project in VS Code:**
+```bash
+npm install
+```
+4. **Open the Project in VS Code:**
 
    Start editing the project in VS Code:
-   ```bash
-   code .
-   ```
+```bash
+code .
+```
 
 5. **Configure Environment Variables:**
 
