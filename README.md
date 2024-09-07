@@ -35,7 +35,7 @@ After setting up, simply run the provided script. It will handle repository crea
 Open PowerShell and execute the following command to clone the repository to your local machine:
    1. **Change to the directory where the repository was cloned:**
    ```bash
-   cd C:
+   cd C:/
    ```
    2. **Clone the Repository:**
 
