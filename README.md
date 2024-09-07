@@ -48,6 +48,10 @@ Open PowerShell and execute the following command to clone the repository to you
 ```bash
 npm install
 ```
+4. **go to that repo**
+   ```bash
+   cd deployer
+   ```
 4. **Open the Project in VS Code:**
 
    Start editing the project in VS Code:
