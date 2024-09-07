@@ -42,22 +42,23 @@ Open PowerShell and execute the following command to clone the repository to you
    ```bash
    git clone https://github.com/Ashish-suman-sharma/deployer.git
    ```
-3. **Initialize the Project:**
-
-   Run npm init to set up the project:
-```bash
-npm install
-```
-4. **go to that repo**
+   3. **go to that repo**
    ```bash
    cd deployer
    ```
-4. **Open the Project in VS Code:**
+   4. **Initialize the Project:**
+
+   Run npm init to set up the project:
+   ```bash
+  npm install
+   ```
+  
+   5. **Open the Project in VS Code:**
 
    Start editing the project in VS Code:
-```bash
-code .
-```
+  ```bash
+  code .
+  ```
 
 5. **Configure Environment Variables:**
 
