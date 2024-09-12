@@ -1,8 +1,8 @@
 @echo off
 echo Running first command...
-node "C:\Users\ashis\Desktop\full-app\index1.js"
+node "C:\full-app\index1.js"
 
 echo First command finished. Running second command...
-node "C:\Users\ashis\Desktop\full-app\index2.js"
+node "C:\full-app\index2.js"
 
 echo Both commands have been executed.
