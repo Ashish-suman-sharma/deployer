@@ -1,4 +1,4 @@
-# Deployer
+# 1. Deployer
 
 ## Overview
 
@@ -28,39 +28,46 @@ The automation is achieved using GitHub API and Vercel API, with authentication 
 
 After setting up, simply run the provided script. It will handle repository creation, file uploads, and deployment to Vercel automatically.
 
-# Installation Guide
+# 2.Installation Guide
 
 ## Cloning the Repository
 
-1. **Clone the Repository:**
+Open PowerShell and execute the following command to clone the repository to your local machine:
+   1. **Change to the directory where the repository was cloned:**
+   ```bash
+   cd C:/
+   ```
+   2. **Clone the Repository:**
 
-   Open PowerShell and execute the following command to clone the repository to your local machine:
    ```bash
    git clone https://github.com/Ashish-suman-sharma/deployer.git
-2. **Change to the directory where the repository was cloned:**
-   ```bash
-   cd C:/deployer
    ```
-2. **Initialize the Project:**
+   3. **go to that repo**
+   ```bash
+   cd deployer
+   ```
+   4. **Initialize the Project:**
 
    Run npm init to set up the project:
    ```bash
-   npm install
+  npm install
    ```
-2. **Open the Project in VS Code:**
+  
+   5. **Open the Project in VS Code:**
 
    Start editing the project in VS Code:
-   ```bash
-   code .
-   ```
+  ```bash
+  code .
+  ```
 
-5. **Configure Environment Variables:**
+  6. **Configure Environment Variables:**
 
    Rename example.env to .env:
 
 
-###  Environment Variables (.env)
- 6. **To use the automation script, you need to configure the following environment variables in your `.env` file:**
+   
+## setting Environment Variables (.env)
+To use the automation script, you need to configure the following environment variables in your `.env` file:
    ```bash
       
    GITHUB_TOKEN=your_github_personal_access_token
@@ -68,11 +75,7 @@ After setting up, simply run the provided script. It will handle repository crea
    GITHUB_USERNAME=your_github_username
   ```
 
-# Obtaining GitHub and Vercel Tokens
-
-In order to use this repository, you'll need to authenticate with both GitHub and Vercel via tokens. Below is a step-by-step guide on how to obtain the required tokens.
-
-## GitHub Token
+## Steps to Generate GitHub Token
 
 A GitHub Personal Access Token (PAT) is required to create repositories and push files programmatically. Follow these steps to generate one:
 
@@ -106,9 +109,6 @@ A GitHub Personal Access Token (PAT) is required to create repositories and push
    GITHUB_TOKEN=your_github_personal_access_token
    GITHUB_USERNAME=your_github_username
 
-# Obtaining Vercel Token
-
-In order to use the deployment functionality provided in this repository, you need to authenticate with Vercel using a Vercel token. Below is a step-by-step guide on how to generate the required Vercel token.
 
 ## Steps to Generate a Vercel Token
 
@@ -151,7 +151,7 @@ Once you have your Vercel token, open your `.env` file and add the following lin
 VERCEL_TOKEN=your_generated_vercel_token
 ```
 
-# Deployment Instructions
+# 3.Deployment Instructions
 
 Once you have set up your environment variables and cloned the repository, follow these steps to deploy your project using the provided `run2.bat` script.
 
@@ -161,20 +161,20 @@ Once you have set up your environment variables and cloned the repository, follo
 
 After configuring your environment (`.env` file) with the necessary tokens, you need to navigate to the folder or repository that you want to deploy.
 
-#### Using VS Code Terminal:
+##### Using VS Code Terminal:
 
 - Open the folder you wish to deploy in **Visual Studio Code**.
 - Open the integrated terminal in VS Code by pressing `Ctrl + ` (backtick).
   
 or 
-#### Using PowerShell or Command Prompt:
+##### Using PowerShell or Command Prompt:
 
 - Open **PowerShell** or **Command Prompt**.
 - Navigate to the directory of your project using the `cd` command. For example:
   ```bash
   cd C:/path/to/your/project
 
-2. Run the Deployment Script  
+### 2. Run the Deployment Script  
 Once you are in the desired project folder, you can run the deployment script located in the deployer repository.
 
 Execute the following command:
