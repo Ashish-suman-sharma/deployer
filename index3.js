@@ -1,7 +1,10 @@
 import fetch from 'node-fetch';
 import open from 'open';
 import { exec } from 'child_process';
-import readline from 'readline';  // Import readline module
+import readline from 'readline';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\full-app\\.env' });
 
 const githubToken = process.env.GITHUB_TOKEN;
 const vercelToken = process.env.VERCEL_TOKEN;
@@ -11,7 +14,7 @@ const githubUsername = process.env.GITHUB_USERNAME;
 async function getRepos(token) {
   let repos = [];
   let page = 1;
-  const perPage = 100; // Maximum allowed per page
+  const perPage = 100;
 
   while (repos.length < 20) {
     const url = `https://api.github.com/user/repos?per_page=${perPage}&page=${page}`;
@@ -36,10 +39,7 @@ async function getRepos(token) {
     page++;
   }
 
-  // Sort repositories by creation date (latest first)
   repos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-  // Return only the latest 20 repositories
   return repos.slice(0, 20).map(repo => ({ name: repo.name, id: repo.id }));
 }
 
@@ -56,10 +56,10 @@ async function deployToVercel(repoUrl, vercelToken, repoName, repoId, projectSet
     body: JSON.stringify({
       name: repoName,
       gitSource: {
-        type: 'github',  // Specify the type of the repository source
+        type: 'github',
         repoUrl: repoUrl,
-        ref: 'main',  // Specify the branch to deploy from
-        repoId: repoId // Add the repoId property
+        ref: 'main',
+        repoId: repoId
       },
       projectSettings: projectSettings
     })
@@ -73,7 +73,7 @@ async function deployToVercel(repoUrl, vercelToken, repoName, repoId, projectSet
   }
 
   const data = await response.json();
-  return data.url; // Deployment URL
+  return data.url;
 }
 
 // Function to get default project settings
@@ -117,7 +117,6 @@ function promptUser(query) {
 
 // Main function
 async function main() {
-  // Step 1: Get all GitHub repos
   const repos = await getRepos(githubToken);
 
   if (repos.length === 0) {
@@ -125,13 +124,11 @@ async function main() {
     return;
   }
 
-  // Step 2: Display the latest 20 repos
   console.log('Select a repository to deploy:');
   repos.reverse().forEach((repo, index) => {
     console.log(`${index + 1}. ${repo.name}`);
   });
 
-  // Step 3: Take user input
   const input = await promptUser('Enter a number (1-20): ');
   const selectedIndex = parseInt(input, 10) - 1;
 
@@ -143,17 +140,12 @@ async function main() {
   const selectedRepo = repos[selectedIndex];
   console.log(`Deploying repository: ${selectedRepo.name}`);
 
-  // Step 4: Get default project settings
   const projectSettings = await getProjectSettings();
-
-  // Step 5: Deploy the repo to Vercel
-  const deploymentUrl = await deployToVercel(`https://github.com/Ashish-suman-sharma/${selectedRepo.name}`, vercelToken, selectedRepo.name, selectedRepo.id, projectSettings);
+  const deploymentUrl = await deployToVercel(`https://github.com/${githubUsername}/${selectedRepo.name}`, vercelToken, selectedRepo.name, selectedRepo.id, projectSettings);
 
   if (deploymentUrl) {
     console.log(`Successfully deployed! URL: ${deploymentUrl}`);
-    // Construct the new URL using the latest repo name
     const customUrl = `https://${selectedRepo.name}-ashishsumansharmas-projects.vercel.app/`;
-    // Print countdown and open the constructed URL in Chrome after 4 seconds
     countdown(10, () => {
       exec(`start chrome "${customUrl}"`, (error) => {
         if (error) {
