@@ -1,6 +1,9 @@
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import { exec } from 'child_process';
+import inquirer from 'inquirer';
+import ora from 'ora';
+import boxen from 'boxen';
 
 // Load environment variables from .env file
 dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\full-app\\.env' });
@@ -106,7 +109,9 @@ function countdown(seconds, callback) {
 // Main function
 async function main() {
   // Step 1: Get all GitHub repos
+  const spinner = ora('Fetching GitHub repositories...').start();
   const repos = await getRepos(githubToken);
+  spinner.succeed('Fetched GitHub repositories.');
 
   if (repos.length === 0) {
     console.error('No repositories found.');
@@ -121,13 +126,15 @@ async function main() {
   const projectSettings = await getProjectSettings();
 
   // Step 4: Deploy the repo to Vercel
-  const deploymentUrl = await deployToVercel(`https://github.com/Ashish-suman-sharma/${latestRepo.name}`, vercelToken, latestRepo.name, latestRepo.id, projectSettings);
+  const deploySpinner = ora('Deploying to Vercel...').start();
+  const deploymentUrl = await deployToVercel(`https://github.com/${githubUsername}/${latestRepo.name}`, vercelToken, latestRepo.name, latestRepo.id, projectSettings);
 
   if (deploymentUrl) {
-    console.log(`Successfully deployed! URL: ${deploymentUrl}`);
+    deploySpinner.succeed('Successfully deployed to Vercel.');
+    console.log(`Deployment URL: ${deploymentUrl}`);
     // Construct the new URL using the latest repo name
     const customUrl = `https://${latestRepo.name}-ashishsumansharmas-projects.vercel.app/`;
-    // Print countdown and open the constructed URL in Chrome after 4 seconds
+    // Print countdown and open the constructed URL in Chrome after 10 seconds
     countdown(10, () => {
       exec(`start chrome "${customUrl}"`, (error) => {
         if (error) {
@@ -135,7 +142,41 @@ async function main() {
         }
       });
     });
+
+    // Display the "Deployment Completed" message box
+    const message = 'Deployment Completed';
+    const boxenOptions = {
+      padding: 1,
+      margin: 1,
+      borderStyle: 'double',
+      borderColor: 'green',
+      backgroundColor: 'black',
+      align: 'center',
+    };
+    const msgBox = boxen(message, boxenOptions);
+    console.log(msgBox);
+  } else {
+    deploySpinner.fail('Failed to deploy to Vercel.');
   }
 }
 
-main().catch(error => console.error(error));
+// Prompt the user to start the deployment process
+async function promptUser() {
+  const answers = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'deploy',
+      message: 'Do you want to deploy the latest GitHub repository to Vercel?',
+      default: true,
+    },
+  ]);
+
+  if (answers.deploy) {
+    main().catch(error => console.error(error));
+  } else {
+    console.log('Deployment cancelled.');
+  }
+}
+
+// Start the prompt
+promptUser();

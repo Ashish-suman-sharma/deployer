@@ -1,7 +1,7 @@
-import readline from 'readline';
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import inquirer from 'inquirer';
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -26,21 +26,23 @@ const runScript = (scriptName, callback) => {
   });
 };
 
-// Create an interface to prompt the user for input
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+// Prompt the user to select an option using inquirer
+const promptUser = async () => {
+  const answers = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'choice',
+      message: 'Select an option:',
+      choices: [
+        { name: 'Git Push', value: '1' },
+        { name: 'Git Push and Deploy', value: '2' },
+        { name: 'Only Deploy', value: '3' },
+        { name: 'Set API Key (run first time only)', value: '4' },
+      ],
+    },
+  ]);
 
-// Prompt the user to select an option
-console.log('Select an option:');
-console.log('1. Git Push');
-console.log('2. git push and Deploy');
-console.log('3. only deploy');
-console.log('4. set api key (run first time only)');
-
-rl.question('Enter your choice (1, 2, 3, 4): ', (choice) => {
-  switch (choice.trim()) {
+  switch (answers.choice) {
     case '1':
       console.log('Running Git Push (first script only)...');
       runScript('index1.js');
@@ -60,8 +62,10 @@ rl.question('Enter your choice (1, 2, 3, 4): ', (choice) => {
       runScript('set.js');
       break;
     default:
-      console.log('Invalid choice. Please select 1, 2, 3, or 4.');
+      console.log('Invalid choice. Please select a valid option.');
       break;
   }
-  rl.close(); // Close the readline interface once the choice is made
-});
+};
+
+// Start the prompt
+promptUser();

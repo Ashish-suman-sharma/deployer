@@ -1,8 +1,9 @@
 import fetch from 'node-fetch';
 import open from 'open';
 import { exec } from 'child_process';
-import readline from 'readline';
 import dotenv from 'dotenv';
+import inquirer from 'inquirer';
+import boxen from 'boxen';
 
 dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\full-app\\.env' });
 
@@ -102,19 +103,6 @@ function countdown(seconds, callback) {
   }, 1000);
 }
 
-// Function to prompt user for input
-function promptUser(query) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-
-  return new Promise(resolve => rl.question(query, answer => {
-    rl.close();
-    resolve(answer);
-  }));
-}
-
 // Main function
 async function main() {
   const repos = await getRepos(githubToken);
@@ -124,20 +112,21 @@ async function main() {
     return;
   }
 
-  console.log('Select a repository to deploy:');
-  repos.reverse().forEach((repo, index) => {
-    console.log(`${index + 1}. ${repo.name}`);
-  });
+  const choices = repos.reverse().map((repo, index) => ({
+    name: repo.name,
+    value: index
+  }));
 
-  const input = await promptUser('Enter a number (1-20): ');
-  const selectedIndex = parseInt(input, 10) - 1;
+  const answers = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'selectedRepoIndex',
+      message: 'Select a repository to deploy:',
+      choices: choices
+    }
+  ]);
 
-  if (selectedIndex < 0 || selectedIndex >= repos.length) {
-    console.error('Invalid selection.');
-    return;
-  }
-
-  const selectedRepo = repos[selectedIndex];
+  const selectedRepo = repos[answers.selectedRepoIndex];
   console.log(`Deploying repository: ${selectedRepo.name}`);
 
   const projectSettings = await getProjectSettings();
@@ -153,6 +142,19 @@ async function main() {
         }
       });
     });
+
+    // Display the "Deployment Completed" message box
+    const message = 'Deployment Completed';
+    const boxenOptions = {
+      padding: 1,
+      margin: 1,
+      borderStyle: 'double',
+      borderColor: 'green',
+      backgroundColor: 'black',
+      align: 'center',
+    };
+    const msgBox = boxen(message, boxenOptions);
+    console.log(msgBox);
   }
 }
 

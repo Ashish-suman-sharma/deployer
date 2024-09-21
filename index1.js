@@ -1,8 +1,9 @@
 import fs from 'fs';
 import fetch from 'node-fetch';
 import { exec } from 'child_process';
-import readline from 'readline';
 import dotenv from 'dotenv';
+import inquirer from 'inquirer';
+import boxen from 'boxen';
 
 // Load environment variables from .env file
 dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\full-app\\.env' });
@@ -11,7 +12,7 @@ const githubToken = process.env.GITHUB_TOKEN;
 const githubUsername = process.env.GITHUB_USERNAME;
 
 // Function to create a GitHub repository
-async function createRepo(token, repoName) {
+async function createRepo(token, repoName, isPrivate) {
   const url = 'https://api.github.com/user/repos';
   const response = await fetch(url, {
     method: 'POST',
@@ -21,7 +22,7 @@ async function createRepo(token, repoName) {
     },
     body: JSON.stringify({
       name: repoName,
-      private: false, // Set to true if you want the repo to be private
+      private: isPrivate,
     }),
   });
 
@@ -130,6 +131,19 @@ function setupGit(repoUrl, repoName) {
                     return;
                   }
                   console.log('Pushed to GitHub:', pushStdout);
+
+                  // Display the "Git Push Completed" message box
+                  const message = 'Git Push Completed';
+                  const boxenOptions = {
+                    padding: 1,
+                    margin: 1,
+                    borderStyle: 'double',
+                    borderColor: 'green',
+                    backgroundColor: 'black',
+                    align: 'center',
+                  };
+                  const msgBox = boxen(message, boxenOptions);
+                  console.log(msgBox);
                 });
               });
             });
@@ -141,11 +155,11 @@ function setupGit(repoUrl, repoName) {
 }
 
 // Main function to automate GitHub repo creation and setup
-async function createGitRepo(repoName) {
+async function createGitRepo(repoName, isPrivate) {
   const token = githubToken;
   const owner = githubUsername;
   // Step 1: Create the repository
-  const repo = await createRepo(token, repoName);
+  const repo = await createRepo(token, repoName, isPrivate);
 
   if (repo && repo.error) {
     console.error(repo.error);
@@ -168,24 +182,29 @@ async function createGitRepo(repoName) {
   }
 }
 
-// Use readline to prompt the user for the repo name
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// Function to prompt for repository name and visibility
+async function promptRepoDetails() {
+  const answers = await inquirer.prompt([
+    {
+      type: 'input',
+      name: 'repoName',
+      message: 'Enter the repository name:',
+    },
+    {
+      type: 'list',
+      name: 'visibility',
+      message: 'Select the repository visibility:',
+      choices: ['public', 'private'],
+    },
+  ]);
 
-// Function to prompt for repository name
-function promptRepoName() {
-  rl.question('Enter the repository name: ', async (repoName) => {
-    const success = await createGitRepo(repoName);
-    if (!success) {
-      console.log('Please enter a different repository name.');
-      promptRepoName();
-    } else {
-      rl.close();
-    }
-  });
+  const isPrivate = answers.visibility === 'private';
+  const success = await createGitRepo(answers.repoName, isPrivate);
+  if (!success) {
+    console.log('Please enter a different repository name.');
+    promptRepoDetails();
+  }
 }
 
 // Start the prompt
-promptRepoName();
+promptRepoDetails();
