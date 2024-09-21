@@ -2,6 +2,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import inquirer from 'inquirer';
+import fs from 'fs';
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -26,6 +27,16 @@ const runScript = (scriptName, callback) => {
   });
 };
 
+// Function to check if .env file is empty
+const checkEnvFile = () => {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf-8').trim();
+    return envContent.length === 0;
+  }
+  return true; // If .env file does not exist, treat it as empty
+};
+
 // Prompt the user to select an option using inquirer
 const promptUser = async () => {
   const answers = await inquirer.prompt([
@@ -37,7 +48,7 @@ const promptUser = async () => {
         { name: 'Git Push', value: '1' },
         { name: 'Git Push and Deploy', value: '2' },
         { name: 'Only Deploy', value: '3' },
-        { name: 'Set API Key (run first time only)', value: '4' },
+        { name: 'Set API Key (run only when code changes)', value: '4' },
       ],
     },
   ]);
@@ -67,5 +78,11 @@ const promptUser = async () => {
   }
 };
 
-// Start the prompt
-promptUser();
+// Check if .env file is empty and run set.js if it is
+if (checkEnvFile()) {
+  console.log('.env file is empty. Running set.js...');
+  runScript('set.js');
+} else {
+  // Start the prompt
+  promptUser();
+}

@@ -3,6 +3,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import inquirer from 'inquirer';
 import boxen from 'boxen';
+import ora from 'ora';
+import axios from 'axios';
 
 const questions = [
   {
@@ -22,8 +24,59 @@ const questions = [
   },
 ];
 
+async function verifyGitHubToken(token) {
+  try {
+    const response = await axios.get('https://api.github.com/user', {
+      headers: { Authorization: `token ${token}` },
+    });
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function verifyVercelToken(token) {
+  try {
+    const response = await axios.get('https://api.vercel.com/v2/user', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function promptForToken(question) {
+  let valid = false;
+  let answer;
+  while (!valid) {
+    const { [question.name]: token } = await inquirer.prompt([question]);
+    const spinner = ora('Verifying token...').start();
+    if (question.name === 'GITHUB_TOKEN') {
+      valid = await verifyGitHubToken(token);
+    } else if (question.name === 'VERCEL_TOKEN') {
+      valid = await verifyVercelToken(token);
+    }
+    spinner.stop();
+    if (!valid) {
+      console.log('Invalid token, please try again.');
+    } else {
+      answer = token;
+    }
+  }
+  return answer;
+}
+
 async function main() {
-  const answers = await inquirer.prompt(questions);
+  const answers = {};
+  for (const question of questions) {
+    if (question.name === 'GITHUB_TOKEN' || question.name === 'VERCEL_TOKEN') {
+      answers[question.name] = await promptForToken(question);
+    } else {
+      const { [question.name]: answer } = await inquirer.prompt([question]);
+      answers[question.name] = answer;
+    }
+  }
 
   const envContent = Object.entries(answers)
     .map(([key, value]) => `${key}=${value}`)
