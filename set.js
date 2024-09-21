@@ -59,7 +59,11 @@ async function promptForToken(question) {
     }
     spinner.stop();
     if (!valid) {
-      console.log('Invalid token, please try again.');
+      if (question.name === 'GITHUB_TOKEN') {
+        console.log('Invalid token, please try again. Click here for a new one: https://github.com/settings/tokens');
+      } else if (question.name === 'VERCEL_TOKEN') {
+        console.log('Invalid token, please try again. Click here for a new one: https://vercel.com/account/tokens');
+      }
     } else {
       answer = token;
     }
