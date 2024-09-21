@@ -17,11 +17,6 @@ const questions = [
     name: 'VERCEL_TOKEN',
     message: 'Enter your Vercel token:',
   },
-  {
-    type: 'input',
-    name: 'GITHUB_USERNAME',
-    message: 'Enter your GitHub username:',
-  },
 ];
 
 async function verifyGitHubToken(token) {
@@ -29,9 +24,9 @@ async function verifyGitHubToken(token) {
     const response = await axios.get('https://api.github.com/user', {
       headers: { Authorization: `token ${token}` },
     });
-    return response.status === 200;
+    return { valid: response.status === 200, username: response.data.login };
   } catch (error) {
-    return false;
+    return { valid: false, username: null };
   }
 }
 
@@ -49,11 +44,14 @@ async function verifyVercelToken(token) {
 async function promptForToken(question) {
   let valid = false;
   let answer;
+  let username = null;
   while (!valid) {
     const { [question.name]: token } = await inquirer.prompt([question]);
     const spinner = ora('Verifying token...').start();
     if (question.name === 'GITHUB_TOKEN') {
-      valid = await verifyGitHubToken(token);
+      const result = await verifyGitHubToken(token);
+      valid = result.valid;
+      username = result.username;
     } else if (question.name === 'VERCEL_TOKEN') {
       valid = await verifyVercelToken(token);
     }
@@ -68,14 +66,18 @@ async function promptForToken(question) {
       answer = token;
     }
   }
-  return answer;
+  return { token: answer, username };
 }
 
 async function main() {
   const answers = {};
   for (const question of questions) {
     if (question.name === 'GITHUB_TOKEN' || question.name === 'VERCEL_TOKEN') {
-      answers[question.name] = await promptForToken(question);
+      const result = await promptForToken(question);
+      answers[question.name] = result.token;
+      if (question.name === 'GITHUB_TOKEN') {
+        answers['GITHUB_USERNAME'] = result.username;
+      }
     } else {
       const { [question.name]: answer } = await inquirer.prompt([question]);
       answers[question.name] = answer;
