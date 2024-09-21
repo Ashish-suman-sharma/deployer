@@ -27,6 +27,9 @@ async function createRepo(token, repoName) {
 
   if (!response.ok) {
     const errorData = await response.json();
+    if (response.status === 422 && errorData.errors && errorData.errors[0].message.includes('name already exists')) {
+      return { error: 'Repository with this name already exists' };
+    }
     console.error(`Error creating repo: ${response.status} ${response.statusText}`);
     console.error('Error details:', errorData);
     return null;
@@ -144,6 +147,11 @@ async function createGitRepo(repoName) {
   // Step 1: Create the repository
   const repo = await createRepo(token, repoName);
 
+  if (repo && repo.error) {
+    console.error(repo.error);
+    return false;
+  }
+
   if (repo && repo.clone_url) {
     console.log(`Repository ${repoName} created at: ${repo.clone_url}`);
 
@@ -153,8 +161,10 @@ async function createGitRepo(repoName) {
     
     // Step 3: Set up Git, commit, and push
     setupGit(repo.clone_url, repoName);
+    return true;
   } else {
     console.error('Error creating repository');
+    return false;
   }
 }
 
@@ -164,8 +174,18 @@ const rl = readline.createInterface({
   output: process.stdout
 });
 
-// Ask for the repository name
-rl.question('Enter the repository name: ', (repoName) => {
-  createGitRepo(repoName);
-  rl.close();
-});
+// Function to prompt for repository name
+function promptRepoName() {
+  rl.question('Enter the repository name: ', async (repoName) => {
+    const success = await createGitRepo(repoName);
+    if (!success) {
+      console.log('Please enter a different repository name.');
+      promptRepoName();
+    } else {
+      rl.close();
+    }
+  });
+}
+
+// Start the prompt
+promptRepoName();
