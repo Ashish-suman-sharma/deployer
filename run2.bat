@@ -1,14 +1,17 @@
 @echo off
 echo Select an option:
-echo 1. Git Push (Run first script only)
+echo 1. Git Push
 echo 2. git push and Deploy 
 echo 3. only deploy
+echo 4. set api key (run frist time only)
 
-set /p choice=Enter your choice (1, 2, or 3): 
+set /p choice=Enter your choice (1, 2, 3, 4): 
 
 if "%choice%"=="1" goto git_push
 if "%choice%"=="2" goto deploy
 if "%choice%"=="3" goto run_last_script
+if "%choice%"=="4" goto set_api_key
+
 goto invalid_choice
 
 :git_push
@@ -31,8 +34,14 @@ node "C:\Users\ashis\Desktop\full-app\index3.js"
 echo Last Script completed.
 goto end
 
+:set_api_key
+echo Setting API Key...
+node "C:\Users\ashis\Desktop\full-app\set.js"
+echo API Key set.
+goto end
+
 :invalid_choice
-echo Invalid choice. Please run the script again and select 1, 2, or 3.
+echo Invalid choice. Please run the script again and select 1, 2, 3, or 4.
 
 :end
 pause

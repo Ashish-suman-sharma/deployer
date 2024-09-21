@@ -1,6 +1,7 @@
-// set.js
 import fs from 'fs';
 import readline from 'readline';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -22,16 +23,23 @@ async function main() {
   for (const question of questions) {
     const answer = await askQuestion(rl, question);
     if (question.includes('GitHub token')) {
-      answers.githubToken = answer;
+      answers.GITHUB_TOKEN = answer;
     } else if (question.includes('Vercel token')) {
-      answers.vercelToken = answer;
+      answers.VERCEL_TOKEN = answer;
     } else if (question.includes('GitHub username')) {
-      answers.githubUsername = answer;
+      answers.GITHUB_USERNAME = answer;
     }
   }
 
-  fs.writeFileSync('credentials.json', JSON.stringify(answers, null, 2));
-  console.log('Credentials saved to credentials.json');
+  const envContent = Object.entries(answers)
+    .map(([key, value]) => `${key}=${value}`)
+    .join('\n');
+
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const envPath = path.join(__dirname, '.env');
+  fs.writeFileSync(envPath, envContent);
+  console.log('Credentials saved to .env');
   rl.close();
 }
 
