@@ -20,6 +20,35 @@ let githubToken = null;
 let githubUsername = null;
 let vercelToken = null;
 
+// Function to ask if the user has restarted their PC
+async function askRestartQuestion() {
+  const message = chalk.blue('Before logging in, please restart your PC and make sure you do not copy anything.');
+  const boxenOptions = {
+    padding: 1,
+    margin: 1,
+    borderStyle: 'double',
+    borderColor: 'yellow',
+    backgroundColor: 'black',
+    align: 'center',
+  };
+  const msgBox = boxen(message, boxenOptions);
+  console.log(msgBox);
+
+  const { restarted } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'restarted',
+      message: 'Have you restarted your PC?',
+      default: false,
+    },
+  ]);
+
+  if (!restarted) {
+    console.log('Please restart your PC and run the script again.');
+    process.exit(0);
+  }
+}
+
 // GitHub OAuth callback
 app.get('/github/callback', async (req, res) => {
   const code = req.query.code;
@@ -157,7 +186,9 @@ function startClipboardMonitor() {
 }
 
 // Start the server and open GitHub OAuth URL
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-  open(`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`);
+askRestartQuestion().then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+    open(`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`);
+  });
 });

@@ -74,7 +74,7 @@ const promptUser = async () => {
       runScript('scripts/index4.js');
       break;
     case '5':
-      console.log('Setting API Key...');
+      console.log('login to Account');
       runScript('login.js');
       break;
     default:
@@ -86,7 +86,7 @@ const promptUser = async () => {
 // Check if .env file is empty and run set.js if it is
 if (checkEnvFile()) {
   console.log('.env file is empty. Running set.js...');
-  runScript('set.js');
+  runScript('login.js');
 } else {
   // Start the prompt
   promptUser();
