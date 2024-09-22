@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Function to execute the scripts and handle interactive input/output
 const runScript = (scriptName, callback) => {
-  const scriptPath = path.join(__dirname, scriptName);
+  const scriptPath = path.join(__dirname, 'scripts', scriptName);
   console.log(`Executing script: ${scriptPath}`);
 
   const child = spawn('node', [scriptPath], {

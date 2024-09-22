@@ -11,10 +11,6 @@ dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
 const githubToken = process.env.GITHUB_TOKEN;
 const githubUsername = process.env.GITHUB_USERNAME;
 
-// Debugging: Log the token and username
-console.log('GitHub Token:', githubToken);
-console.log('GitHub Username:', githubUsername);
-
 // Function to create a GitHub repository
 async function createRepo(token, repoName, isPrivate) {
   const url = 'https://api.github.com/user/repos';
