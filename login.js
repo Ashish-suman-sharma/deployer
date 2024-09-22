@@ -10,7 +10,6 @@ import ora from 'ora';
 import chalk from 'chalk';
 import { exec } from 'child_process';
 
-// Replace these placeholders with your actual client IDs and secrets
 const GITHUB_CLIENT_ID = 'Ov23ligoamHrg8WSzwAB';
 const GITHUB_CLIENT_SECRET = '0153fbca7d52c2147ecc77fef7fc72dc25f9af7e';
 
@@ -20,15 +19,6 @@ const port = 3000;
 let githubToken = null;
 let githubUsername = null;
 let vercelToken = null;
-
-// Run clipboard monitor script in the background
-exec('node clipboard_monitor.js', (err, stdout, stderr) => {
-  if (err) {
-    console.error(`Error starting clipboard monitor: ${err}`);
-    return;
-  }
-  console.log('Clipboard monitor started.');
-});
 
 // GitHub OAuth callback
 app.get('/github/callback', async (req, res) => {
@@ -61,14 +51,9 @@ app.get('/github/callback', async (req, res) => {
 
   if (githubToken) {
     showVercelMessage();
-    setTimeout(() => {
+    setTimeout(async () => {
       open('https://vercel.com/account/tokens');
-      const spinner = ora('Loading...').start();
-      setTimeout(async () => {
-        spinner.stop();
-        await promptForVercelToken();
-        saveTokens();
-      }, 5000);
+      startClipboardMonitor();
     }, 5000);
   }
 });
@@ -143,6 +128,32 @@ function saveTokens() {
 
   console.log(msgBox);
   process.exit(0);
+}
+
+// Start clipboard monitor script
+function startClipboardMonitor() {
+  const clipboardMonitor = exec('node clipboard_monitor.js', (err, stdout, stderr) => {
+    if (err) {
+      console.error(`Error starting clipboard monitor: ${err}`);
+      return;
+    }
+    console.log('Clipboard monitor started.');
+  });
+
+  clipboardMonitor.stdout.on('data', (data) => {
+    if (data.includes('Clipboard content changed. Closing Chrome browser...')) {
+      clipboardMonitor.kill();
+      console.log('Clipboard content detected, closing browser.');
+      exec('taskkill /IM chrome.exe /F', (err, stdout, stderr) => {
+        if (err) {
+          console.error(`Error closing browser: ${err}`);
+          return;
+        }
+        console.log('Browser closed.');
+        promptForVercelToken().then(saveTokens);
+      });
+    }
+  });
 }
 
 // Start the server and open GitHub OAuth URL

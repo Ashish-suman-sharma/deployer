@@ -22,6 +22,7 @@
     "express": "^4.21.0",
     "inquirer": "^11.0.2",
     "log-update": "^6.1.0",
+    "node-clipboard": "^1.2.0",
     "node-fetch": "^3.3.2",
     "open": "^10.1.0",
     "ora": "^8.1.0",

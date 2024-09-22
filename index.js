@@ -75,7 +75,7 @@ const promptUser = async () => {
       break;
     case '5':
       console.log('Setting API Key...');
-      runScript('set.js');
+      runScript('login.js');
       break;
     default:
       console.log('Invalid choice. Please select a valid option.');
