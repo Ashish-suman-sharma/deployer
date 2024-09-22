@@ -98,6 +98,45 @@ function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Function to check URL
+async function checkUrl(url) {
+  try {
+    const response = await fetch(url);
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+// Function to open URL with retry
+async function openUrlWithRetry(url, maxWaitTime, checkInterval) {
+  const startTime = Date.now();
+  const loadingSpinner = ora('Checking URL...').start();
+
+  while (Date.now() - startTime < maxWaitTime) {
+    const isUrlValid = await checkUrl(url);
+
+    if (isUrlValid) {
+      loadingSpinner.succeed('Opening URL in Chrome.');
+      exec(`start chrome "${url}"`, (error) => {
+        if (error) {
+          console.error(`Error opening URL in Chrome: ${error.message}`);
+        }
+      });
+      return;
+    }
+
+    await delay(checkInterval);
+  }
+
+  loadingSpinner.warn('Opening URL in Chrome after 60 seconds despite errors.');
+  exec(`start chrome "${url}"`, (error) => {
+    if (error) {
+      console.error(`Error opening URL in Chrome: ${error.message}`);
+    }
+  });
+}
+
 // Main function
 async function main() {
   // Step 1: Get all GitHub repos
@@ -140,20 +179,10 @@ async function main() {
 
     // Construct the new URL using the latest repo name
     const customUrl = `https://${latestRepo.name}-ashishsumansharmas-projects.vercel.app/`;
-
-    // Show inquirer loading animation for 6-7 seconds before opening the URL
-    const loadingSpinner = ora('Opening URL...').start();
-    await delay(6500); 
-    loadingSpinner.succeed('Opening URL in Chrome.');
-
-    // Open the constructed URL in Chrome
-    exec(`start chrome "${customUrl}"`, (error) => {
-      if (error) {
-        console.error(`Error opening URL in Chrome: ${error.message}`);
-      }
-    });
-  } else {
-    deploySpinner.fail('Failed to deploy to Vercel.');
+    const maxWaitTime = 60000; // 60 seconds
+    const checkInterval = 5000; // 5 seconds
+    
+    await openUrlWithRetry(customUrl, maxWaitTime, checkInterval);
   }
 }
 
