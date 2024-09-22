@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import inquirer from 'inquirer';
 import boxen from 'boxen';
 
-dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\full-app\\.env' });
+dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
 
 const githubToken = process.env.GITHUB_TOKEN;
 const vercelToken = process.env.VERCEL_TOKEN;

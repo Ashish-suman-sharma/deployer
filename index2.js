@@ -6,7 +6,7 @@ import ora from 'ora';
 import boxen from 'boxen';
 
 // Load environment variables from .env file
-dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\full-app\\.env' });
+dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
 
 const githubToken = process.env.GITHUB_TOKEN;
 const vercelToken = process.env.VERCEL_TOKEN;

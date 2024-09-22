@@ -16,27 +16,27 @@ goto invalid_choice
 
 :git_push
 echo Running Git Push (first script only)...
-node "C:\Users\ashis\Desktop\full-app\index1.js"
+node "C:\Users\ashis\Desktop\Deployer\index1.js"
 echo Git Push completed.
 goto end
 
 :deploy
 echo Running Deploy (first and second script)...
-node "C:\Users\ashis\Desktop\full-app\index1.js"
+node "C:\Users\ashis\Desktop\Deployer\index1.js"
 echo First command finished. Running second command...
-node "C:\Users\ashis\Desktop\full-app\index2.js"
+node "C:\Users\ashis\Desktop\Deployer\index2.js"
 echo Deploy completed.
 goto end
 
 :run_last_script
 echo Running Last Script (second script only)...
-node "C:\Users\ashis\Desktop\full-app\index3.js"
+node "C:\Users\ashis\Desktop\Deployer\index3.js"
 echo Last Script completed.
 goto end
 
 :set_api_key
 echo Setting API Key...
-node "C:\Users\ashis\Desktop\full-app\set.js"
+node "C:\Users\ashis\Desktop\Deployer\set.js"
 echo API Key set.
 goto end
 
