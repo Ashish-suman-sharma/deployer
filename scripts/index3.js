@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import dotenv from 'dotenv';
 import inquirer from 'inquirer';
 import boxen from 'boxen';
+import ora from 'ora';
 
 dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
 
@@ -89,18 +90,9 @@ async function getProjectSettings() {
   };
 }
 
-// Function to print countdown
-function countdown(seconds, callback) {
-  let remaining = seconds;
-  const interval = setInterval(() => {
-    if (remaining > 0) {
-      console.log(`Opening URL in ${remaining} seconds...`);
-      remaining--;
-    } else {
-      clearInterval(interval);
-      callback();
-    }
-  }, 1000);
+// Delay function
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Main function
@@ -135,13 +127,6 @@ async function main() {
   if (deploymentUrl) {
     console.log(`Successfully deployed! URL: ${deploymentUrl}`);
     const customUrl = `https://${selectedRepo.name}-ashishsumansharmas-projects.vercel.app/`;
-    countdown(10, () => {
-      exec(`start chrome "${customUrl}"`, (error) => {
-        if (error) {
-          console.error(`Error opening URL in Chrome: ${error.message}`);
-        }
-      });
-    });
 
     // Display the "Deployment Completed" message box
     const message = 'Deployment Completed';
@@ -155,6 +140,17 @@ async function main() {
     };
     const msgBox = boxen(message, boxenOptions);
     console.log(msgBox);
+
+    // Show loading animation for 6-7 seconds before opening the URL
+    const loadingSpinner = ora('Opening URL...').start();
+    await delay(6500); 
+    loadingSpinner.succeed('Opening URL in Chrome.');
+
+    exec(`start chrome "${customUrl}"`, (error) => {
+      if (error) {
+        console.error(`Error opening URL in Chrome: ${error.message}`);
+      }
+    });
   }
 }
 
