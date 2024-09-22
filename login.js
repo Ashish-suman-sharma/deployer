@@ -8,6 +8,7 @@ import boxen from 'boxen';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
+import { exec } from 'child_process';
 
 // Replace these placeholders with your actual client IDs and secrets
 const GITHUB_CLIENT_ID = 'Ov23ligoamHrg8WSzwAB';
@@ -19,6 +20,15 @@ const port = 3000;
 let githubToken = null;
 let githubUsername = null;
 let vercelToken = null;
+
+// Run clipboard monitor script in the background
+exec('node clipboard_monitor.js', (err, stdout, stderr) => {
+  if (err) {
+    console.error(`Error starting clipboard monitor: ${err}`);
+    return;
+  }
+  console.log('Clipboard monitor started.');
+});
 
 // GitHub OAuth callback
 app.get('/github/callback', async (req, res) => {
@@ -51,15 +61,31 @@ app.get('/github/callback', async (req, res) => {
 
   if (githubToken) {
     showVercelMessage();
-    await promptForVercelToken();
-    saveTokens();
+    setTimeout(() => {
+      open('https://vercel.com/account/tokens');
+      const spinner = ora('Loading...').start();
+      setTimeout(async () => {
+        spinner.stop();
+        await promptForVercelToken();
+        saveTokens();
+      }, 5000);
+    }, 5000);
   }
 });
 
 // Show Vercel message
 function showVercelMessage() {
   const message = chalk.blue('In a few seconds, Vercel will open. Please create a Vercel token and come back. Do not press anything.');
-  console.log(message);
+  const boxenOptions = {
+    padding: 1,
+    margin: 1,
+    borderStyle: 'double',
+    borderColor: 'yellow',
+    backgroundColor: 'black',
+    align: 'center',
+  };
+  const msgBox = boxen(message, boxenOptions);
+  console.log(msgBox);
 }
 
 // Verify Vercel token
