@@ -13,7 +13,7 @@ router.get('/github-repos', async (req, res) => {
   try {
     const githubResponse = await axios.get('https://api.github.com/user/repos', {
       headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` },
-      params: { per_page: 30, visibility: 'all' }, // Include both private and public repositories
+      params: { per_page: 100, visibility: 'all' }, // Include both private and public repositories
     });
     res.json(githubResponse.data);
   } catch (error) {

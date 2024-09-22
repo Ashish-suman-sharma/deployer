@@ -92,18 +92,9 @@ async function getProjectSettings() {
   };
 }
 
-// Countdown function
-function countdown(seconds, callback) {
-  let remaining = seconds;
-  const interval = setInterval(() => {
-    if (remaining > 0) {
-      console.log(`Opening URL in ${remaining} seconds...`);
-      remaining--;
-    } else {
-      clearInterval(interval);
-      callback();
-    }
-  }, 1000);
+// Delay function
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Main function
@@ -132,17 +123,7 @@ async function main() {
   if (deploymentUrl) {
     deploySpinner.succeed('Successfully deployed to Vercel.');
     console.log(`Deployment URL: ${deploymentUrl}`);
-    // Construct the new URL using the latest repo name
-    const customUrl = `https://${latestRepo.name}-ashishsumansharmas-projects.vercel.app/`;
-    // Print countdown and open the constructed URL in Chrome after 10 seconds
-    countdown(10, () => {
-      exec(`start chrome "${customUrl}"`, (error) => {
-        if (error) {
-          console.error(`Error opening URL in Chrome: ${error.message}`);
-        }
-      });
-    });
-
+    
     // Display the "Deployment Completed" message box
     const message = 'Deployment Completed';
     const boxenOptions = {
@@ -155,6 +136,21 @@ async function main() {
     };
     const msgBox = boxen(message, boxenOptions);
     console.log(msgBox);
+
+    // Construct the new URL using the latest repo name
+    const customUrl = `https://${latestRepo.name}-ashishsumansharmas-projects.vercel.app/`;
+
+    // Show inquirer loading animation for 6-7 seconds before opening the URL
+    const loadingSpinner = ora('Opening URL...').start();
+    await delay(6500); 
+    loadingSpinner.succeed('Opening URL in Chrome.');
+
+    // Open the constructed URL in Chrome
+    exec(`start chrome "${customUrl}"`, (error) => {
+      if (error) {
+        console.error(`Error opening URL in Chrome: ${error.message}`);
+      }
+    });
   } else {
     deploySpinner.fail('Failed to deploy to Vercel.');
   }
