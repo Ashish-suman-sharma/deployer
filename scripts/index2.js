@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import boxen from 'boxen';
+import chalk from 'chalk';
 
 // Load environment variables from .env file
 dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
@@ -111,7 +112,7 @@ async function main() {
 
   // Step 2: Select the latest repo
   const latestRepo = repos[0];
-  console.log(`Deploying the latest repository: ${latestRepo.name}`);
+  console.log(chalk.green(`✔ Deploying the latest repository: ${latestRepo.name}`));
 
   // Step 3: Get default project settings
   const projectSettings = await getProjectSettings();
@@ -122,7 +123,7 @@ async function main() {
 
   if (deploymentUrl) {
     deploySpinner.succeed('Successfully deployed to Vercel.');
-    console.log(`Deployment URL: ${deploymentUrl}`);
+    console.log(chalk.green(`✔ Deployment URL: ${deploymentUrl}`));
     
     // Display the "Deployment Completed" message box
     const message = 'Deployment Completed';

@@ -4,6 +4,7 @@ import { exec } from 'child_process';
 import dotenv from 'dotenv';
 import inquirer from 'inquirer';
 import boxen from 'boxen';
+import chalk from 'chalk';
 
 // Load environment variables from .env file
 dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
@@ -78,24 +79,28 @@ function setupGit(repoUrl, repoName) {
       console.error(`Error initializing Git: ${initErr}`);
       return;
     }
+    console.log(chalk.green('✔ Git init completed'));
 
     exec('git remote add origin ' + repoUrl, (remoteErr) => {
       if (remoteErr) {
         console.error(`Error setting remote origin: ${remoteErr}`);
         return;
       }
+      console.log(chalk.green('✔ Remote origin set'));
 
       exec('git fetch origin', (fetchErr) => {
         if (fetchErr) {
           console.error(`Error fetching from origin: ${fetchErr}`);
           return;
         }
+        console.log(chalk.green('✔ Fetched from origin'));
 
         exec('git branch -M main', (branchErr) => {
           if (branchErr) {
             console.error(`Error renaming branch to main: ${branchErr}`);
             return;
           }
+          console.log(chalk.green('✔ Branch renamed to main'));
 
           // Remove local README.md before pulling
           fs.unlinkSync('README.md');
@@ -105,6 +110,7 @@ function setupGit(repoUrl, repoName) {
               console.error(`Error pulling from GitHub: ${pullErr}`);
               return;
             }
+            console.log(chalk.green('✔ Pulled from GitHub'));
 
             // Recreate README.md file locally
             fs.writeFileSync('README.md', `# ${repoName}\nThis is the repository for ${repoName}.`);
@@ -114,6 +120,7 @@ function setupGit(repoUrl, repoName) {
                 console.error(`Error adding files: ${addErr}`);
                 return;
               }
+              console.log(chalk.green('✔ Files added'));
 
               exec('git commit -m "Initial commit"', (commitErr, stdout, stderr) => {
                 if (commitErr) {
@@ -121,8 +128,7 @@ function setupGit(repoUrl, repoName) {
                   console.error(stderr);
                   return;
                 }
-
-                console.log(stdout);
+                console.log(chalk.green('✔ Initial commit completed'));
 
                 exec('git push -u origin main', (pushErr, pushStdout, pushStderr) => {
                   if (pushErr) {
@@ -130,7 +136,7 @@ function setupGit(repoUrl, repoName) {
                     console.error(pushStderr);
                     return;
                   }
-                  console.log('Pushed to GitHub:', pushStdout);
+                  console.log(chalk.green('✔ Pushed to GitHub'));
 
                   // Display the "Git Push Completed" message box
                   const message = 'Git Push Completed';
@@ -167,11 +173,11 @@ async function createGitRepo(repoName, isPrivate) {
   }
 
   if (repo && repo.clone_url) {
-    console.log(`Repository ${repoName} created at: ${repo.clone_url}`);
+    console.log(chalk.green(`✔ Repository ${repoName} created at: ${repo.clone_url}`));
 
     // Step 2: Create README.md on GitHub
     await createReadme(token, owner, repoName);
-    console.log(`README.md created in ${repoName}`);
+    console.log(chalk.green(`✔ README.md created in ${repoName}`));
     
     // Step 3: Set up Git, commit, and push
     setupGit(repo.clone_url, repoName);
