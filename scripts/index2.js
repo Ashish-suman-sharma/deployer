@@ -143,6 +143,29 @@ async function openUrlWithRetry(url, maxWaitTime, checkInterval) {
   });
 }
 
+// Function to get Vercel team name
+async function getVercelTeamName(token) {
+  const url = 'https://api.vercel.com/v2/teams';
+  const response = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    console.error(`Error fetching Vercel team name: ${response.status} ${response.statusText}`);
+    return null;
+  }
+
+  const data = await response.json();
+  if (data.teams && data.teams.length > 0) {
+    return data.teams[0].slug; // Assuming the first team is the desired one
+  }
+
+  return null;
+}
+
 // Main function
 async function main() {
   // Step 1: Get all GitHub repos
@@ -183,8 +206,15 @@ async function main() {
     const msgBox = boxen(message, boxenOptions);
     console.log(msgBox);
 
-    // Construct the new URL using the latest repo name
-    const customUrl = `https://${latestRepo.name}-ashishsumansharmas-projects.vercel.app/`;
+    // Step 5: Get Vercel team name
+    const teamName = await getVercelTeamName(vercelToken);
+    if (!teamName) {
+      console.error('Failed to fetch Vercel team name.');
+      return;
+    }
+
+    // Construct the new URL using the latest repo name and team name
+    const customUrl = `https://${latestRepo.name}-${teamName}.vercel.app/`;
     const maxWaitTime = 60000; // 60 seconds
     const checkInterval = 5000; // 5 seconds
     

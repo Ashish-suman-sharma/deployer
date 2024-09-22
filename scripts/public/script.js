@@ -46,14 +46,20 @@ window.onload = async function() {
     };
 
     // Handle delete confirmation
-    confirmButton.onclick = async function() {
+        confirmButton.onclick = async function() {
+      try {
         if (deleteInfo.type === 'github') {
-            await fetch(`/api/github-repos/${deleteInfo.id}`, { method: 'DELETE' });
+          console.log(`Sending DELETE request for GitHub repo: ${deleteInfo.id}`);
+          await fetch(`/api/github-repos/${deleteInfo.id}`, { method: 'DELETE' });
         } else if (deleteInfo.type === 'vercel') {
-            await fetch(`/api/vercel-projects/${deleteInfo.id}`, { method: 'DELETE' });
+          console.log(`Sending DELETE request for Vercel project: ${deleteInfo.id}`);
+          await fetch(`/api/vercel-projects/${deleteInfo.id}`, { method: 'DELETE' });
         }
         localStorage.setItem('scrollPosition', window.scrollY);
         window.location.reload();
+      } catch (error) {
+        console.error('Error during delete operation:', error);
+      }
     };
 
     // Cancel delete

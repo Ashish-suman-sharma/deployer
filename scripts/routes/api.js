@@ -42,11 +42,13 @@ router.get('/vercel-projects', async (req, res) => {
 router.delete('/github-repos/:repo', async (req, res) => {
   try {
     const repoName = req.params.repo;
+    console.log(`Attempting to delete GitHub repo: ${repoName}`);
     await axios.delete(`https://api.github.com/repos/${process.env.GITHUB_USERNAME}/${repoName}`, {
       headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` },
     });
     res.send('GitHub repo deleted');
   } catch (error) {
+    console.error('Error deleting GitHub repository:', error.response ? error.response.data : error.message);
     res.status(500).send('Error deleting GitHub repository');
   }
 });

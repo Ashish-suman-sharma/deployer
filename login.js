@@ -164,7 +164,7 @@ async function main() {
   await askRestartQuestion();
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
-    open(`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo`);
+    open(`https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo,delete_repo`);
   });
 }
 
