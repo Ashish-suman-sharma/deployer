@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename);
 
 // Function to execute the scripts and handle interactive input/output
 const runScript = (scriptName, callback) => {
-  const scriptPath = path.join(__dirname, 'scripts', scriptName);
+  const scriptPath = path.join(__dirname, scriptName);
   console.log(`Executing script: ${scriptPath}`);
 
   const child = spawn('node', [scriptPath], {
@@ -48,7 +48,8 @@ const promptUser = async () => {
         { name: 'Git Push', value: '1' },
         { name: 'Git Push and Deploy', value: '2' },
         { name: 'Only Deploy', value: '3' },
-        { name: 'Set API Key (run only when code changes)', value: '4' },
+        { name: 'delete git-repo  and vercel project', value: '4' },
+        { name: 'Set API Key (run only when code changes)', value: '5' },
       ],
     },
   ]);
@@ -56,19 +57,23 @@ const promptUser = async () => {
   switch (answers.choice) {
     case '1':
       console.log('Running Git Push (first script only)...');
-      runScript('index1.js');
+      runScript('scripts/index1.js');
       break;
     case '2':
       console.log('Running Deploy (first and second script)...');
-      runScript('index1.js', () => {
-        runScript('index2.js');
+      runScript('scripts/index1.js', () => {
+        runScript('scripts/index2.js');
       });
       break;
     case '3':
       console.log('Running Last Script (second script only)...');
-      runScript('index3.js');
+      runScript('scripts/index3.js');
       break;
     case '4':
+      console.log('Running Last Script (second script only)...');
+      runScript('scripts/index4.js');
+      break;
+    case '5':
       console.log('Setting API Key...');
       runScript('set.js');
       break;
