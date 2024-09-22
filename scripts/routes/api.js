@@ -2,9 +2,14 @@ import express from 'express';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Load environment variables from the specified .env file
-dotenv.config({ path: path.resolve('C:\\Users\\ashis\\Desktop\\Deployer\\.env') });
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from .env file
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const router = express.Router();
 

@@ -6,7 +6,15 @@ import inquirer from 'inquirer';
 import boxen from 'boxen';
 import ora from 'ora';
 
-dotenv.config({ path: 'C:\\Users\\ashis\\Desktop\\Deployer\\.env' });
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from .env file
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const githubToken = process.env.GITHUB_TOKEN;
 const vercelToken = process.env.VERCEL_TOKEN;
