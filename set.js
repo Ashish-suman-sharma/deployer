@@ -107,4 +107,4 @@ async function main() {
   console.log(msgBox);
 }
 
-main();
+export default main;

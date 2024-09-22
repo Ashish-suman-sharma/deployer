@@ -86,7 +86,7 @@ const promptUser = async () => {
 // Check if .env file is empty and run set.js if it is
 if (checkEnvFile()) {
   console.log('.env file is empty. Running set.js...');
-  runScript('login.js');
+  runScript('startup.js');
 } else {
   // Start the prompt
   promptUser();
