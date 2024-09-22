@@ -8,7 +8,6 @@ import boxen from 'boxen';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import chalk from 'chalk';
-import { exec } from 'child_process';
 
 const GITHUB_CLIENT_ID = 'Ov23ligoamHrg8WSzwAB';
 const GITHUB_CLIENT_SECRET = '0153fbca7d52c2147ecc77fef7fc72dc25f9af7e';
@@ -22,7 +21,7 @@ let vercelToken = null;
 
 // Function to ask if the user has restarted their PC
 async function askRestartQuestion() {
-  const message = chalk.blue('Before logging in, please restart your PC and make sure you do not copy anything.');
+  const message = chalk.blue('Note: chrome opens automatically, please close it after verification.');
   const boxenOptions = {
     padding: 1,
     margin: 1,
@@ -38,13 +37,13 @@ async function askRestartQuestion() {
     {
       type: 'confirm',
       name: 'restarted',
-      message: 'Have you restarted your PC?',
+      message: 'Are you ready to proceed?',
       default: false,
     },
   ]);
 
   if (!restarted) {
-    console.log('Please restart your PC and run the script again.');
+    console.log('please run this app again ');
     process.exit(0);
   }
 }
@@ -82,7 +81,8 @@ app.get('/github/callback', async (req, res) => {
     showVercelMessage();
     setTimeout(async () => {
       open('https://vercel.com/account/tokens');
-      startClipboardMonitor();
+      await promptForVercelToken();
+      saveTokens();
     }, 5000);
   }
 });
@@ -157,32 +157,6 @@ function saveTokens() {
 
   console.log(msgBox);
   process.exit(0);
-}
-
-// Start clipboard monitor script
-function startClipboardMonitor() {
-  const clipboardMonitor = exec('node clipboard_monitor.js', (err, stdout, stderr) => {
-    if (err) {
-      console.error(`Error starting clipboard monitor: ${err}`);
-      return;
-    }
-    console.log('Clipboard monitor started.');
-  });
-
-  clipboardMonitor.stdout.on('data', (data) => {
-    if (data.includes('Clipboard content changed. Closing Chrome browser...')) {
-      clipboardMonitor.kill();
-      console.log('Clipboard content detected, closing browser.');
-      exec('taskkill /IM chrome.exe /F', (err, stdout, stderr) => {
-        if (err) {
-          console.error(`Error closing browser: ${err}`);
-          return;
-        }
-        console.log('Browser closed.');
-        promptForVercelToken().then(saveTokens);
-      });
-    }
-  });
 }
 
 // Start the server and open GitHub OAuth URL
