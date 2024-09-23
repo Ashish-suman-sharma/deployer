@@ -32,20 +32,12 @@ After setting up, simply run the provided script. It will handle repository crea
 
 Follow these steps to set up the Deployer tool on your local machine:
 
-1. **Clone the Repository**: Open your terminal or PowerShell and run the following command to clone the repository to your local machine:
+**Clone the Repository**: Open your terminal or PowerShell and run the following command to clone the repository to your local machine:
     ```bash
-    git clone https://github.com/Ashish-suman-sharma/deployer.git C:/Deployer
-    ```
-
-2. **Install Dependencies**: Navigate to the cloned directory and install the necessary dependencies using npm:
-    ```bash
-    cd C:/Deployer
+    git clone https://github.com/Ashish-suman-sharma/deployer.git
+    cd Deployer
     npm install
-    ```
-
-3. **Run the Script**: Execute the provided batch file to start the deployment process:
-    ```bash
-    C:/Deployer/run.bat
+    node index.js
     ```
 
 By following these steps, you will have the Deployer tool set up and ready to use.
