@@ -38,7 +38,7 @@ async function askRestartQuestion() {
       type: 'confirm',
       name: 'restarted',
       message: 'Are you ready to proceed?',
-      default: false,
+      default: true,
     },
   ]);
 
