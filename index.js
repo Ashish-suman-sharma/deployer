@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import inquirer from 'inquirer';
 import fs from 'fs';
+import os from 'os';
 
 // Get the directory name of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +36,16 @@ const checkEnvFile = () => {
     return envContent.length === 0;
   }
   return true; // If .env file does not exist, treat it as empty
+};
+
+// Function to create or replace deploy.bat on the desktop
+const createDeployBat = () => {
+  const desktopPath = path.join(os.homedir(), 'Desktop');
+  const deployBatPath = path.join(desktopPath, 'deploy.bat');
+  const batContent = `@echo off\nnode "${path.join(__dirname, 'index.js')}"`;
+
+  fs.writeFileSync(deployBatPath, batContent, 'utf-8');
+  console.log(`Created or replaced deploy.bat at ${deployBatPath}`);
 };
 
 // Prompt the user to select an option using inquirer
@@ -85,8 +96,9 @@ const promptUser = async () => {
 
 // Check if .env file is empty and run set.js if it is
 if (checkEnvFile()) {
-  console.log('.env file is empty. Running set.js...');
+  console.log('.env file is empty or does not exist. Running startup.js...');
   runScript('startup.js');
+  createDeployBat();
 } else {
   // Start the prompt
   promptUser();
