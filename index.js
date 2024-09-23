@@ -48,25 +48,6 @@ const createDeployBat = () => {
   console.log(`Created or replaced deploy.bat at ${deployBatPath}`);
 };
 
-// Function to add the repository path to the system environment variables
-const addPathToSystemEnv = (newPath) => {
-  try {
-    // Get the current PATH variable
-    const currentPath = execSync('echo %PATH%', { encoding: 'utf-8' }).trim();
-    
-    // Check if the new path is already in the PATH variable
-    if (!currentPath.includes(newPath)) {
-      // Add the new path to the PATH variable
-      execSync(`setx PATH "${currentPath};${newPath}"`, { stdio: 'inherit' });
-      console.log(`Added ${newPath} to system PATH`);
-    } else {
-      console.log(`${newPath} is already in the system PATH`);
-    }
-  } catch (error) {
-    console.error(`Error adding path to system environment variables: ${error.message}`);
-  }
-};
-
 // Prompt the user to select an option using inquirer
 const promptUser = async () => {
   const answers = await inquirer.prompt([
@@ -115,10 +96,10 @@ const promptUser = async () => {
 
 // Check if .env file is empty and run set.js if it is
 if (checkEnvFile()) {
-  console.log('.env file is empty or does not exist. Running startup.js...');
-  runScript('startup.js');
-  createDeployBat();
-  addPathToSystemEnv(path.join(__dirname)); // Add the current directory to the system PATH
+  runScript('envpath.js', () => {
+    runScript('startup.js');
+    createDeployBat();
+  });
 } else {
   // Start the prompt
   promptUser();
