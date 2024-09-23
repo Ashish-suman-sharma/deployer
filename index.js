@@ -38,17 +38,17 @@ const checkEnvFile = () => {
   return true; // If .env file does not exist, treat it as empty
 };
 
-// Function to create or replace deploy.bat on the desktop
+// Function to create or replace deploy.bat in the root folder of the repository
 const createDeployBat = () => {
-  const desktopPath = path.join(os.homedir(), 'Desktop');
-  const deployBatPath = path.join(desktopPath, 'deploy.bat');
+  const repoRootPath = __dirname;
+  const deployBatPath = path.join(repoRootPath, 'deploy.bat');
   const batContent = `@echo off\nnode "${path.join(__dirname, 'index.js')}"`;
 
   fs.writeFileSync(deployBatPath, batContent, 'utf-8');
   console.log(`Created or replaced deploy.bat at ${deployBatPath}`);
 };
 
-// Function to add a path to the system environment variables
+// Function to add the repository path to the system environment variables
 const addPathToSystemEnv = (newPath) => {
   try {
     // Get the current PATH variable
@@ -66,12 +66,6 @@ const addPathToSystemEnv = (newPath) => {
     console.error(`Error adding path to system environment variables: ${error.message}`);
   }
 };
-
-// Get the desktop path
-const desktopPath = path.join(os.homedir(), 'Desktop');
-
-// Add the desktop path to the system environment variables
-addPathToSystemEnv(desktopPath);
 
 // Prompt the user to select an option using inquirer
 const promptUser = async () => {
