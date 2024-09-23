@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import inquirer from 'inquirer';
@@ -47,6 +47,31 @@ const createDeployBat = () => {
   fs.writeFileSync(deployBatPath, batContent, 'utf-8');
   console.log(`Created or replaced deploy.bat at ${deployBatPath}`);
 };
+
+// Function to add a path to the system environment variables
+const addPathToSystemEnv = (newPath) => {
+  try {
+    // Get the current PATH variable
+    const currentPath = execSync('echo %PATH%', { encoding: 'utf-8' }).trim();
+    
+    // Check if the new path is already in the PATH variable
+    if (!currentPath.includes(newPath)) {
+      // Add the new path to the PATH variable
+      execSync(`setx PATH "${currentPath};${newPath}"`, { stdio: 'inherit' });
+      console.log(`Added ${newPath} to system PATH`);
+    } else {
+      console.log(`${newPath} is already in the system PATH`);
+    }
+  } catch (error) {
+    console.error(`Error adding path to system environment variables: ${error.message}`);
+  }
+};
+
+// Get the desktop path
+const desktopPath = path.join(os.homedir(), 'Desktop');
+
+// Add the desktop path to the system environment variables
+addPathToSystemEnv(desktopPath);
 
 // Prompt the user to select an option using inquirer
 const promptUser = async () => {
@@ -99,6 +124,7 @@ if (checkEnvFile()) {
   console.log('.env file is empty or does not exist. Running startup.js...');
   runScript('startup.js');
   createDeployBat();
+  addPathToSystemEnv(path.join(__dirname)); // Add the current directory to the system PATH
 } else {
   // Start the prompt
   promptUser();
