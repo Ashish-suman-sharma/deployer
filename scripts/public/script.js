@@ -8,31 +8,37 @@ window.onload = async function() {
     let deleteInfo = null;
     let selectedButton = cancelButton;
 
-    // Fetch and sort GitHub repos
-    const githubRepos = await fetch('/api/github-repos').then(res => res.json());
-    githubRepos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest to oldest
-    githubRepos.forEach(repo => {
-        githubTableBody.innerHTML += `
-            <tr>
-                <td>${repo.name}</td>
-                <td><a href="${repo.html_url}" target="_blank">${repo.html_url}</a></td>
-                <td><button onclick="confirmDelete('github', '${repo.name}')">Delete</button></td>
-            </tr>
-        `;
-    });
+    try {
+        const githubRepos = await fetch('/api/github-repos').then(res => res.json());
+        githubRepos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort newest to oldest
+        githubRepos.forEach(repo => {
+            githubTableBody.innerHTML += `
+                <tr>
+                    <td>${repo.name}</td>
+                    <td><a href="${repo.html_url}" target="_blank">${repo.html_url}</a></td>
+                    <td><button onclick="confirmDelete('github', '${repo.name}')">Delete</button></td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error('Error fetching GitHub repositories:', error);
+    }
 
-    // Fetch and sort Vercel projects
-    const vercelProjects = await fetch('/api/vercel-projects').then(res => res.json());
-    vercelProjects.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    vercelProjects.forEach(project => {
-        vercelTableBody.innerHTML += `
-            <tr>
-                <td>${project.name}</td>
-                <td><a href="https://${project.name}.vercel.app" target="_blank">https://${project.name}.vercel.app</a></td>
-                <td><button onclick="confirmDelete('vercel', '${project.id}', '${project.name}')">Delete</button></td>
-            </tr>
-        `;
-    });
+    try {
+        const vercelProjects = await fetch('/api/vercel-projects').then(res => res.json());
+        vercelProjects.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        vercelProjects.forEach(project => {
+            vercelTableBody.innerHTML += `
+                <tr>
+                    <td>${project.name}</td>
+                    <td><a href="https://${project.name}.vercel.app" target="_blank">https://${project.name}.vercel.app</a></td>
+                    <td><button onclick="confirmDelete('vercel', '${project.id}', '${project.name}')">Delete</button></td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error('Error fetching Vercel projects:', error);
+    }
 
     // Show confirmation popup
     window.confirmDelete = function(type, id, name) {
@@ -46,20 +52,20 @@ window.onload = async function() {
     };
 
     // Handle delete confirmation
-        confirmButton.onclick = async function() {
-      try {
-        if (deleteInfo.type === 'github') {
-          console.log(`Sending DELETE request for GitHub repo: ${deleteInfo.id}`);
-          await fetch(`/api/github-repos/${deleteInfo.id}`, { method: 'DELETE' });
-        } else if (deleteInfo.type === 'vercel') {
-          console.log(`Sending DELETE request for Vercel project: ${deleteInfo.id}`);
-          await fetch(`/api/vercel-projects/${deleteInfo.id}`, { method: 'DELETE' });
+    confirmButton.onclick = async function() {
+        try {
+            if (deleteInfo.type === 'github') {
+                console.log(`Sending DELETE request for GitHub repo: ${deleteInfo.id}`);
+                await fetch(`/api/github-repos/${deleteInfo.id}`, { method: 'DELETE' });
+            } else if (deleteInfo.type === 'vercel') {
+                console.log(`Sending DELETE request for Vercel project: ${deleteInfo.id}`);
+                await fetch(`/api/vercel-projects/${deleteInfo.id}`, { method: 'DELETE' });
+            }
+            localStorage.setItem('scrollPosition', window.scrollY);
+            window.location.reload();
+        } catch (error) {
+            console.error('Error during delete operation:', error);
         }
-        localStorage.setItem('scrollPosition', window.scrollY);
-        window.location.reload();
-      } catch (error) {
-        console.error('Error during delete operation:', error);
-      }
     };
 
     // Cancel delete
